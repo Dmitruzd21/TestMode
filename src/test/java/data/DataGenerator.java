@@ -7,7 +7,7 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import static io.restassured.RestAssured.given;
 import lombok.Value;
-import org.junit.jupiter.api.Test;
+
 
 import java.util.Locale;
 
@@ -15,7 +15,7 @@ public class DataGenerator {
     public DataGenerator() {
     }
 
-    // Создаем дата-класс пользователя, а также при помощи Loombok автоматически создаем конструктор
+    // Создаем дата-класс пользователя, а также при помощи Lombok автоматически создаем конструктор
     // на основе этого класса будут созданы пользователи с разным статусом (через конструктор напрямую инициилизируем поля)
 
     @Value

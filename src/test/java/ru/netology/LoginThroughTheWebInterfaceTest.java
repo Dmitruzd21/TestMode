@@ -3,12 +3,14 @@ package ru.netology;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selectors;
+import data.DataGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Condition.*;
+import static data.DataGenerator.*;
 
 public class LoginThroughTheWebInterfaceTest {
 
@@ -26,17 +28,19 @@ public class LoginThroughTheWebInterfaceTest {
     // 1 - Наличие активного пользователя (успешный вход)
     @Test
     public void shouldLoginRegisteredUser() {
-        $("[data-test-id=login] .input__control").setValue("vasya");
-        $("[data-test-id=password] .input__control").setValue("password");
+        DataGenerator.UserInfo activeUser = createActiveUser();
+        $("[data-test-id=login] .input__control").setValue(activeUser.getLogin());
+        $("[data-test-id=password] .input__control").setValue(activeUser.getPassword());
         $("[data-test-id=action-login]").click();
         $(Selectors.withText("Личный кабинет")).shouldBe(visible);
     }
 
     // 2 - Наличие заблокированного пользователя
     @Test
-    public void shouldNotLoginIfUserIsBlocked() {
-        $("[data-test-id=login] .input__control").setValue("Ivan");
-        $("[data-test-id=password] .input__control").setValue("passwordG");
+    public void shouldGetErrorIfUserIsBlocked() {
+        DataGenerator.UserInfo blockedUser = createBlockedUser();
+        $("[data-test-id=login] .input__control").setValue(blockedUser.getLogin());
+        $("[data-test-id=password] .input__control").setValue(blockedUser.getPassword());
         $("[data-test-id=action-login]").click();
         $("[data-test-id=error-notification]").shouldBe(visible).find(".notification__title").shouldHave(exactText("Ошибка"));
         $("[data-test-id=error-notification] .notification__content").shouldHave(exactText("Ошибка! " + "Пользователь заблокирован"));
@@ -44,9 +48,9 @@ public class LoginThroughTheWebInterfaceTest {
 
     // 3 - Отсутствие пользователя
     @Test
-    public void shouldNotLoginIfUserDoesNotExist() {
-        $("[data-test-id=login] .input__control").setValue("ggg");
-        $("[data-test-id=password] .input__control").setValue("fw44w3");
+    public void shouldGetErrorIfUserDoesNotExist() {
+        $("[data-test-id=login] .input__control").setValue(getLogin());
+        $("[data-test-id=password] .input__control").setValue(getPassword());
         $("[data-test-id=action-login]").click();
         $("[data-test-id=error-notification]").shouldBe(visible).find(".notification__title").shouldHave(exactText("Ошибка"));
         $("[data-test-id=error-notification] .notification__content").shouldHave(exactText("Ошибка! " + "Неверно указан логин или пароль"));
@@ -54,9 +58,10 @@ public class LoginThroughTheWebInterfaceTest {
 
     // 4 - Невалидный логин активного пользователя
     @Test
-    public void shouldNotLoginIfActiveUserWithInvalidLogin() {
-        $("[data-test-id=login] .input__control").setValue("vasy");
-        $("[data-test-id=password] .input__control").setValue("password");
+    public void shouldGetErrorIfActiveUserWithInvalidLogin() {
+        DataGenerator.UserInfo activeUser = createActiveUser();
+        $("[data-test-id=login] .input__control").setValue(getLogin());
+        $("[data-test-id=password] .input__control").setValue(activeUser.getPassword());
         $("[data-test-id=action-login]").click();
         $("[data-test-id=error-notification]").shouldBe(visible).find(".notification__title").shouldHave(exactText("Ошибка"));
         $("[data-test-id=error-notification] .notification__content").shouldHave(exactText("Ошибка! " + "Неверно указан логин или пароль"));
@@ -64,9 +69,10 @@ public class LoginThroughTheWebInterfaceTest {
 
     // 5 - Невалидный пароль активного пользователя
     @Test
-    public void shouldNotLoginIfActiveUserWithInvalidPassword() {
-        $("[data-test-id=login] .input__control").setValue("vasya");
-        $("[data-test-id=password] .input__control").setValue("greg");
+    public void shouldGetErrorIfActiveUserWithInvalidPassword() {
+        DataGenerator.UserInfo activeUser = createActiveUser();
+        $("[data-test-id=login] .input__control").setValue(activeUser.getLogin());
+        $("[data-test-id=password] .input__control").setValue(getPassword());
         $("[data-test-id=action-login]").click();
         $("[data-test-id=error-notification]").shouldBe(visible).find(".notification__title").shouldHave(exactText("Ошибка"));
         $("[data-test-id=error-notification] .notification__content").shouldHave(exactText("Ошибка! " + "Неверно указан логин или пароль"));
@@ -74,9 +80,10 @@ public class LoginThroughTheWebInterfaceTest {
 
     // 6 - Невалидный логин заблокированного пользователя
     @Test
-    public void shouldNotLoginIfBlockedUserWithInvalidLogin() {
-        $("[data-test-id=login] .input__control").setValue("Iva");
-        $("[data-test-id=password] .input__control").setValue("passwordG");
+    public void shouldGetErrorIfBlockedUserWithInvalidLogin() {
+        DataGenerator.UserInfo blockedUser = createBlockedUser();
+        $("[data-test-id=login] .input__control").setValue(getLogin());
+        $("[data-test-id=password] .input__control").setValue(blockedUser.getPassword());
         $("[data-test-id=action-login]").click();
         $("[data-test-id=error-notification]").shouldBe(visible).find(".notification__title").shouldHave(exactText("Ошибка"));
         $("[data-test-id=error-notification] .notification__content").shouldHave(exactText("Ошибка! " + "Неверно указан логин или пароль"));
@@ -84,9 +91,10 @@ public class LoginThroughTheWebInterfaceTest {
 
     // 7 - Невалидный пароль заблокированного пользователя
     @Test
-    public void shouldNotLoginIfBlockedUserWithInvalidPassword() {
-        $("[data-test-id=login] .input__control").setValue("Ivan");
-        $("[data-test-id=password] .input__control").setValue("htrh");
+    public void shouldGetErrorIfBlockedUserWithInvalidPassword() {
+        DataGenerator.UserInfo blockedUser = createBlockedUser();
+        $("[data-test-id=login] .input__control").setValue(blockedUser.getLogin());
+        $("[data-test-id=password] .input__control").setValue(getPassword());
         $("[data-test-id=action-login]").click();
         $("[data-test-id=error-notification]").shouldBe(visible).find(".notification__title").shouldHave(exactText("Ошибка"));
         $("[data-test-id=error-notification] .notification__content").shouldHave(exactText("Ошибка! " + "Неверно указан логин или пароль"));
